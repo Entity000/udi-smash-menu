@@ -59,7 +59,7 @@ export default function Menu() {
       <Hero />
       
       {/* Sticky Category Navigation */}
-      <div className="sticky top-[73px] z-40 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {categories.map((category) => (

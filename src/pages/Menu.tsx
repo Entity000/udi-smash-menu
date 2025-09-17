@@ -1,61 +1,60 @@
-import { useState } from 'react';
 import { categories, products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import Hero from '@/components/Hero';
 
 export default function Menu() {
-  const [selectedCategory, setSelectedCategory] = useState('burgers');
-
-  const filteredProducts = products.filter(product => product.category === selectedCategory);
-
   return (
     <div className="min-h-screen">
       <Hero />
       
       <section id="cardapio" className="py-16 bg-gradient-warm">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
               Nosso <span className="text-primary">Cardápio</span>
             </h2>
             <p className="text-muted-foreground text-lg">
-              Escolha entre nossas deliciosas opções artesanais
+              Explore todas as nossas deliciosas opções artesanais
             </p>
           </div>
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`category-pill ${
-                  selectedCategory === category.id 
-                    ? 'category-pill-active' 
-                    : 'category-pill-inactive'
-                }`}
-              >
-                <span className="mr-2">{category.icon}</span>
-                {category.name}
-              </button>
-            ))}
-          </div>
+          {/* Products by Category Sections */}
+          <div className="space-y-16">
+            {categories.map((category) => {
+              const categoryProducts = products.filter(product => product.category === category.id);
+              
+              return (
+                <div key={category.id} className="animate-slide-up">
+                  {/* Category Header */}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-3 bg-card rounded-full px-6 py-3 shadow-md border border-border/50">
+                      <span className="text-3xl">{category.icon}</span>
+                      <h3 className="text-2xl font-bold">{category.name}</h3>
+                    </div>
+                  </div>
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="animate-slide-up">
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+                  {/* Products Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {categoryProducts.map((product, index) => (
+                      <div 
+                        key={product.id} 
+                        className="animate-slide-up"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <ProductCard product={product} />
+                      </div>
+                    ))}
+                  </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">🍽️</div>
-              <p className="text-muted-foreground">Nenhum produto encontrado nesta categoria.</p>
-            </div>
-          )}
+                  {categoryProducts.length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Em breve novos produtos nesta categoria!</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

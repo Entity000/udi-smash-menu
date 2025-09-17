@@ -6,9 +6,10 @@ import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
+  onProductClick: (product: Product) => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onProductClick }: ProductCardProps) {
   const { addItem, items, updateQuantity } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   
@@ -34,7 +35,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="product-card group">
-      <div className="relative overflow-hidden">
+      <div 
+        className="relative overflow-hidden cursor-pointer"
+        onClick={() => onProductClick(product)}
+      >
         <img 
           src={product.image} 
           alt={product.name}
@@ -47,11 +51,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       
       <div className="p-3 sm:p-4">
-        <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors line-clamp-1">
+        <h3 
+          className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors line-clamp-1 cursor-pointer"
+          onClick={() => onProductClick(product)}
+        >
           {product.name}
         </h3>
         
-        <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
+        <p 
+          className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 cursor-pointer"
+          onClick={() => onProductClick(product)}
+        >
           {product.description}
         </p>
         

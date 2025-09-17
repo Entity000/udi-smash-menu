@@ -1,4 +1,4 @@
-import { productImages } from '@/data/images';
+import heroImage from '@/assets/hero-banner-new.jpg';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ export default function Hero() {
       <div className="absolute inset-0 hero-gradient opacity-90"></div>
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat mix-blend-overlay"
-        style={{ backgroundImage: `url(${productImages.hero})` }}
+        style={{ backgroundImage: `url(${heroImage})` }}
       ></div>
       
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">

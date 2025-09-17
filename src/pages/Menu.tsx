@@ -1,13 +1,29 @@
 import { useEffect, useState } from 'react';
-import { categories, products } from '@/data/products';
+import { categories, products, Product } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import ProductModal from '@/components/ProductModal';
 import Hero from '@/components/Hero';
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import { Link } from 'react-router-dom';
 
 export default function Menu() {
   const [activeCategory, setActiveCategory] = useState('burgers');
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { itemCount, total } = useCart();
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   // Scroll spy para detectar seção ativa
   useEffect(() => {
@@ -124,7 +140,7 @@ export default function Menu() {
                         className="animate-slide-up"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
-                        <ProductCard product={product} />
+                        <ProductCard product={product} onProductClick={handleProductClick} />
                       </div>
                     ))}
                   </div>
@@ -178,6 +194,33 @@ export default function Menu() {
           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 mx-auto" />
         </button>
       )}
+
+      {/* Floating Cart Button */}
+      {itemCount > 0 && (
+        <Link to="/carrinho">
+          <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
+            <div className="bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 p-4 flex items-center gap-3 min-w-[120px]">
+              <div className="relative">
+                <ShoppingCart className="w-6 h-6" />
+                <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              </div>
+              <div className="hidden sm:flex flex-col text-sm">
+                <span className="font-semibold">Carrinho</span>
+                <span className="text-xs opacity-90">R$ {total.toFixed(2).replace('.', ',')}</span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }

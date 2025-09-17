@@ -60,64 +60,64 @@ export default function Menu() {
       
       {/* Sticky Category Navigation */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+        <div className="px-4 py-2 sm:py-3">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => scrollToCategory(category.id)}
-                className={`category-pill whitespace-nowrap flex-shrink-0 ${
+                className={`category-pill whitespace-nowrap flex-shrink-0 min-w-fit ${
                   activeCategory === category.id 
                     ? 'category-pill-active' 
                     : 'category-pill-inactive'
                 }`}
               >
-                <span className="mr-2">{category.icon}</span>
-                {category.name}
+                <span className="mr-1.5 sm:mr-2 text-lg sm:text-xl">{category.icon}</span>
+                <span className="text-xs sm:text-sm font-medium">{category.name}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
       
-      <section className="py-8 bg-gradient-warm">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
+      <section className="py-4 sm:py-8 bg-gradient-warm">
+        <div className="px-3 sm:px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
               Nosso <span className="text-primary">Cardápio</span>
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm sm:text-lg px-4">
               Explore todas as nossas deliciosas opções artesanais
             </p>
           </div>
 
           {/* Products by Category Sections */}
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12">
             {categories.map((category) => {
               const categoryProducts = products.filter(product => product.category === category.id);
               
               return (
-                <div key={category.id} id={category.id} className="scroll-mt-32">
+                <div key={category.id} id={category.id} className="scroll-mt-20 sm:scroll-mt-32">
                   {/* Category Header */}
-                  <div className="mb-8">
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-2xl">{category.icon}</span>
+                  <div className="mb-4 sm:mb-8">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-2">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-lg sm:text-2xl">{category.icon}</span>
                         </div>
                         <div>
-                          <h3 className="text-3xl font-bold text-foreground">{category.name}</h3>
-                          <p className="text-muted-foreground">
+                          <h3 className="text-xl sm:text-3xl font-bold text-foreground">{category.name}</h3>
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             {categoryProducts.length} {categoryProducts.length === 1 ? 'item' : 'itens'} disponíveis
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="h-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-full w-20"></div>
+                    <div className="h-0.5 sm:h-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-full w-16 sm:w-20"></div>
                   </div>
 
                   {/* Products Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
                     {categoryProducts.map((product, index) => (
                       <div 
                         key={product.id} 
@@ -130,17 +130,17 @@ export default function Menu() {
                   </div>
 
                   {categoryProducts.length === 0 && (
-                    <div className="text-center py-8 product-card">
-                      <div className="text-4xl mb-4">🚧</div>
-                      <p className="text-muted-foreground">Em breve novos produtos nesta categoria!</p>
+                    <div className="text-center py-6 sm:py-8 product-card">
+                      <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🚧</div>
+                      <p className="text-muted-foreground text-sm sm:text-base">Em breve novos produtos nesta categoria!</p>
                     </div>
                   )}
 
                   {/* Divider (except for last category) */}
                   {category.id !== categories[categories.length - 1].id && (
-                    <div className="flex items-center gap-4 mt-8">
+                    <div className="flex items-center gap-4 mt-6 sm:mt-8">
                       <div className="flex-1 h-px bg-border"></div>
-                      <div className="text-muted-foreground text-sm">•••</div>
+                      <div className="text-muted-foreground text-xs sm:text-sm">•••</div>
                       <div className="flex-1 h-px bg-border"></div>
                     </div>
                   )}
@@ -150,17 +150,17 @@ export default function Menu() {
           </div>
 
           {/* Bottom CTA */}
-          <div className="text-center mt-16 product-card p-8">
-            <div className="text-4xl mb-4">🛒</div>
-            <h3 className="text-2xl font-bold mb-4">Não encontrou o que procurava?</h3>
-            <p className="text-muted-foreground mb-6">
+          <div className="text-center mt-12 sm:mt-16 product-card p-4 sm:p-8 mx-2 sm:mx-0">
+            <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🛒</div>
+            <h3 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4">Não encontrou o que procurava?</h3>
+            <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
               Entre em contato conosco! Estamos sempre criando novos sabores incríveis.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="btn-secondary">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Button size="lg" className="btn-secondary text-sm sm:text-base">
                 📱 WhatsApp
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" className="text-sm sm:text-base">
                 📧 E-mail
               </Button>
             </div>
@@ -172,10 +172,10 @@ export default function Menu() {
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-bounce-gentle"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-bounce-gentle"
           aria-label="Voltar ao topo"
         >
-          <ChevronUp className="w-6 h-6 mx-auto" />
+          <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 mx-auto" />
         </button>
       )}
     </div>

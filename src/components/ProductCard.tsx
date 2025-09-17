@@ -46,27 +46,27 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       
-      <div className="p-4">
-        <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+      <div className="p-3 sm:p-4">
+        <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors line-clamp-1">
           {product.name}
         </h3>
         
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
           {product.description}
         </p>
         
         <div className="flex items-center justify-between">
-          <div className="price-tag">
+          <div className="price-tag text-base sm:text-lg">
             R$ {product.price.toFixed(2).replace('.', ',')}
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {quantity > 0 ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-7 w-7 sm:h-8 sm:w-8 rounded-full"
                   onClick={() => handleUpdateQuantity(quantity - 1)}
                 >
                   <Minus className="h-3 w-3" />
@@ -79,7 +79,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-7 w-7 sm:h-8 sm:w-8 rounded-full"
                   onClick={() => handleUpdateQuantity(quantity + 1)}
                 >
                   <Plus className="h-3 w-3" />
@@ -88,12 +88,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             ) : (
               <Button
                 size="sm"
-                className={`btn-primary text-sm px-4 ${isAdding ? 'animate-pulse-glow' : ''}`}
+                className={`btn-primary text-xs sm:text-sm px-3 sm:px-4 ${isAdding ? 'animate-pulse-glow' : ''}`}
                 onClick={handleAddToCart}
                 disabled={isAdding}
               >
                 <Plus className="h-3 w-3 mr-1" />
-                {isAdding ? 'Adicionando...' : 'Adicionar'}
+                <span className="hidden sm:inline">{isAdding ? 'Adicionando...' : 'Adicionar'}</span>
+                <span className="sm:hidden">+</span>
               </Button>
             )}
           </div>

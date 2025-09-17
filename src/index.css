@@ -127,6 +127,16 @@
 }
 
 @layer components {
+  /* Scrollbar customization */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Button Variants - Sistema de botões */
   .btn-primary {
     @apply bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 active:scale-95;

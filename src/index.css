@@ -2,41 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Udi Smash Burger Design System - Cores quentes e modernas */
 
 @layer base {
   :root {
+    /* Background System */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 9%;
 
+    /* Card System */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 9%;
 
+    /* Popover System */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand Colors - Hamburgueria Artesanal */
+    --primary: 0 84% 60%;        /* Vermelho vibrante */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 0 84% 70%;   /* Vermelho mais claro para glows */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 45 93% 47%;     /* Amarelo dourado */
+    --secondary-foreground: 0 0% 9%;
+    --secondary-glow: 45 93% 57%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 24 95% 53%;        /* Laranja energético */
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 24 95% 63%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neutral System */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 0 84% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Gradients - Efeitos visuais */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-warm: linear-gradient(180deg, hsl(var(--secondary) / 0.1), transparent);
+
+    /* Shadows - Sistema de elevação */
+    --shadow-sm: 0 2px 8px hsl(var(--primary) / 0.1);
+    --shadow-md: 0 8px 24px hsl(var(--primary) / 0.15);
+    --shadow-lg: 0 16px 40px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 32px hsl(var(--primary-glow) / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +122,72 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Button Variants - Sistema de botões */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-secondary to-secondary-glow text-secondary-foreground font-bold px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary font-bold px-6 py-3 rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+
+  /* Product Card Effects */
+  .product-card {
+    @apply bg-card rounded-xl shadow-sm hover:shadow-lg border border-border/50 hover:border-primary/20 transition-all duration-300 hover:scale-[1.02] overflow-hidden;
+  }
+
+  .product-card-image {
+    @apply w-full h-48 object-cover transition-transform duration-300;
+  }
+
+  .product-card:hover .product-card-image {
+    @apply scale-110;
+  }
+
+  /* Cart Badge Animation */
+  .cart-badge {
+    @apply bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center absolute -top-2 -right-2 animate-bounce;
+  }
+
+  /* Category Pills */
+  .category-pill {
+    @apply px-4 py-2 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer;
+  }
+
+  .category-pill-active {
+    @apply bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md;
+  }
+
+  .category-pill-inactive {
+    @apply bg-muted text-muted-foreground hover:bg-muted/80;
+  }
+
+  /* Hero Section */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  /* Loading Animation */
+  .loading-pulse {
+    @apply animate-pulse bg-muted rounded-lg;
+  }
+
+  /* Price Highlight */
+  .price-tag {
+    @apply text-primary font-bold text-lg;
+  }
+
+  /* Upsell Card */
+  .upsell-card {
+    @apply bg-gradient-to-r from-secondary/10 to-accent/10 border-2 border-dashed border-secondary/50 rounded-xl p-4 hover:border-secondary transition-all duration-300;
   }
 }

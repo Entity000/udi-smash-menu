@@ -11,6 +11,7 @@ import PixPayment from '@/components/PixPayment';
 interface CheckoutForm {
   name: string;
   phone: string;
+  document: string;
   address: string;
   complement: string;
   paymentMethod: 'credit' | 'debit' | 'pix' | 'cash';
@@ -24,6 +25,7 @@ export default function Checkout() {
   const [form, setForm] = useState<CheckoutForm>({
     name: '',
     phone: '',
+    document: '',
     address: '',
     complement: '',
     paymentMethod: 'credit'
@@ -39,7 +41,7 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!form.name || !form.phone || !form.address) {
+    if (!form.name || !form.phone || !form.document || !form.address) {
       toast({
         title: "Dados incompletos",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -147,6 +149,17 @@ export default function Checkout() {
                     </div>
                     
                     <div>
+                      <Label htmlFor="document">CPF *</Label>
+                      <Input
+                        id="document"
+                        value={form.document}
+                        onChange={(e) => handleInputChange('document', e.target.value)}
+                        placeholder="000.000.000-00"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="sm:col-span-2">
                       <Label htmlFor="phone">WhatsApp *</Label>
                       <Input
                         id="phone"
@@ -240,7 +253,8 @@ export default function Checkout() {
                       amount={total}
                       customer={{
                         name: form.name,
-                        phone: form.phone
+                        phone: form.phone,
+                        document: form.document
                       }}
                       orderData={{ ...form, items, total }}
                       onSuccess={handlePixSuccess}

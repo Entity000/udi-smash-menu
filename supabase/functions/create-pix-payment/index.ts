@@ -16,32 +16,39 @@ serve(async (req) => {
   try {
     const { amount, customer, orderData } = await req.json();
 
-    const ghostsPayApiKey = Deno.env.get('GHOSTSPAY_API_KEY');
-    if (!ghostsPayApiKey) {
-      throw new Error('GhostsPay API key not configured');
-    }
-
     console.log('Creating PIX payment for amount:', amount);
     console.log('Customer data:', customer);
+    console.log('Order data:', orderData);
 
-    // Create PIX payment with GhostsPay
+    // Create PIX payment with GhostsPay v2
     const pixPayload = {
-      amount: Math.round(amount * 100), // Convert to cents
       customer: {
+        document: {
+          number: customer.document || "12345678901", // CPF obrigatório
+          type: "CPF"
+        },
         name: customer.name,
-        phone: customer.phone,
-        email: customer.email || `${customer.phone}@temp.com`
+        email: customer.email || `${customer.phone}@temp.com`,
+        phone: customer.phone
       },
-      description: `Pedido UdiSmash - ${orderData.items.length} itens`,
-      external_id: `order_${Date.now()}`,
-      expires_in: 300, // 5 minutes
-      callback_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/pix-webhook`
+      paymentMethod: "PIX",
+      items: orderData.items.map((item: any) => ({
+        title: item.name,
+        unitPrice: Math.round(item.price * 100), // Convert to cents
+        quantity: item.quantity
+      })),
+      amount: Math.round(amount * 100), // Convert to cents
+      pix: {
+        expiresInDays: 1
+      }
     };
 
-    const response = await fetch('https://api.ghostspay.com.br/v1/pix', {
+    console.log('PIX payload:', JSON.stringify(pixPayload, null, 2));
+
+    const response = await fetch('https://api.ghostspaysv2.com/functions/v1/transactions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${ghostsPayApiKey}`,
+        'Authorization': 'Basic c2tfbGl2ZV9rajFubmJ6akhKZ3F4ZVNxYXgzbkVOM1daS0lHWUJsU3RkYXBVOXZjY2VqOVlRcWg6ZGRlZGVkNTUtMzk5YS00OGFiLTkwYzAtNTIzYzVjZDZjNGJk',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(pixPayload),

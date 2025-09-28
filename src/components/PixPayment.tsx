@@ -9,6 +9,7 @@ interface PixPaymentProps {
   customer: {
     name: string;
     phone: string;
+    document?: string;
     email?: string;
   };
   orderData: any;

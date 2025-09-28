@@ -63,15 +63,17 @@ serve(async (req) => {
     const pixData = await response.json();
     console.log('PIX payment created successfully:', pixData.id);
 
+    console.log('Full PIX response:', JSON.stringify(pixData, null, 2));
+
     return new Response(JSON.stringify({
       success: true,
       payment: {
         id: pixData.id,
-        qr_code: pixData.qr_code,
-        qr_code_url: pixData.qr_code_url,
-        pix_code: pixData.pix_code,
+        qr_code: pixData.qrCode || pixData.qr_code,
+        qr_code_url: pixData.qrCodeUrl || pixData.qr_code_url,
+        pix_code: pixData.pixCode || pixData.pix_code || pixData.brCode,
         amount: pixData.amount / 100, // Convert back to reais
-        expires_at: pixData.expires_at,
+        expires_at: pixData.expiresAt || pixData.expires_at,
         status: pixData.status
       }
     }), {

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, MapPin, Phone, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PixPayment from '@/components/PixPayment';
 
 interface CheckoutForm {
   name: string;
@@ -29,6 +30,7 @@ export default function Checkout() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPixPayment, setShowPixPayment] = useState(false);
 
   const handleInputChange = (field: keyof CheckoutForm, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -46,9 +48,14 @@ export default function Checkout() {
       return;
     }
 
+    if (form.paymentMethod === 'pix') {
+      setShowPixPayment(true);
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simular processamento
+    // Simular processamento para outros métodos
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Limpar carrinho e navegar para confirmação
@@ -59,6 +66,26 @@ export default function Checkout() {
         orderId: Math.random().toString(36).substr(2, 9).toUpperCase()
       }
     });
+  };
+
+  const handlePixSuccess = () => {
+    clearCart();
+    navigate('/confirmacao', {
+      state: { 
+        orderData: { ...form, items, total },
+        orderId: Math.random().toString(36).substr(2, 9).toUpperCase(),
+        paymentMethod: 'pix'
+      }
+    });
+  };
+
+  const handlePixError = (error: string) => {
+    toast({
+      title: "Erro no pagamento PIX",
+      description: error,
+      variant: "destructive"
+    });
+    setShowPixPayment(false);
   };
 
   if (items.length === 0) {
@@ -208,46 +235,63 @@ export default function Checkout() {
             <div className="lg:col-span-1">
               <div className="sticky top-24">
                 <div className="product-card p-6">
-                  <h3 className="text-xl font-bold mb-4">Resumo do Pedido</h3>
-                  
-                  <div className="space-y-3 mb-6">
-                    {items.map((item) => (
-                      <div key={item.id} className="flex justify-between text-sm">
-                        <span>{item.quantity}x {item.name}</span>
-                        <span>R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                  {showPixPayment ? (
+                    <PixPayment
+                      amount={total}
+                      customer={{
+                        name: form.name,
+                        phone: form.phone
+                      }}
+                      orderData={{ ...form, items, total }}
+                      onSuccess={handlePixSuccess}
+                      onError={handlePixError}
+                    />
+                  ) : (
+                    <>
+                      <h3 className="text-xl font-bold mb-4">Resumo do Pedido</h3>
+                      
+                      <div className="space-y-3 mb-6">
+                        {items.map((item) => (
+                          <div key={item.id} className="flex justify-between text-sm">
+                            <span>{item.quantity}x {item.name}</span>
+                            <span>R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                          </div>
+                        ))}
+                        
+                        <div className="border-t pt-3">
+                          <div className="flex justify-between items-center text-lg font-bold">
+                            <span>Total</span>
+                            <span className="price-tag text-xl">
+                              R$ {total.toFixed(2).replace('.', ',')}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                    
-                    <div className="border-t pt-3">
-                      <div className="flex justify-between items-center text-lg font-bold">
-                        <span>Total</span>
-                        <span className="price-tag text-xl">
-                          R$ {total.toFixed(2).replace('.', ',')}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit"
-                    size="lg" 
-                    className="w-full btn-primary"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        Processando...
-                      </div>
-                    ) : (
-                      'Confirmar Pedido'
-                    )}
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground text-center mt-4">
-                    Tempo estimado de entrega: 30-45 minutos
-                  </p>
+                      
+                      <Button 
+                        type="submit"
+                        size="lg" 
+                        className="w-full btn-primary"
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            Processando...
+                          </div>
+                        ) : form.paymentMethod === 'pix' ? (
+                          'Gerar PIX'
+                        ) : (
+                          'Confirmar Pedido'
+                        )}
+                      </Button>
+                      
+                      <p className="text-xs text-muted-foreground text-center mt-4">
+                        Tempo estimado de entrega: 30-45 minutos
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

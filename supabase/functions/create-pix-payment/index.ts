@@ -65,13 +65,20 @@ serve(async (req) => {
 
     console.log('Full PIX response:', JSON.stringify(pixData, null, 2));
 
+    // Generate QR code image URL using qrserver.com
+    const pixCopiaCola = pixData.pix?.qrcode;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixCopiaCola)}`;
+    
+    console.log('PIX copia e cola:', pixCopiaCola);
+    console.log('QR Code URL generated:', qrCodeUrl);
+
     return new Response(JSON.stringify({
       success: true,
       payment: {
         id: pixData.id,
-        qr_code: pixData.pix?.qrcode,
-        qr_code_url: `data:image/png;base64,${pixData.pix?.qrcode}`, // QR code as data URL
-        pix_code: pixData.pix?.code,
+        qr_code: pixCopiaCola,
+        qr_code_url: qrCodeUrl,
+        pix_code: pixCopiaCola, // The PIX code for copy/paste
         amount: pixData.amount / 100, // Convert back to reais
         expires_at: pixData.pix?.expirationDate,
         status: pixData.status

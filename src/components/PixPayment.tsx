@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Copy, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface PixPaymentProps {
   amount: number;
@@ -22,7 +23,9 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [status, setStatus] = useState<'pending' | 'paid' | 'expired'>('pending');
+  const [checking, setChecking] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     createPixPayment();
@@ -34,9 +37,14 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
       return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
       setStatus('expired');
-      onError('Pagamento PIX expirado. Tente novamente.');
+      toast({
+        title: "PIX Expirado",
+        description: "O tempo para pagamento expirou. Voltando ao cardápio...",
+        variant: "destructive"
+      });
+      setTimeout(() => navigate('/'), 2000);
     }
-  }, [timeLeft, status]);
+  }, [timeLeft, status, navigate, toast]);
 
   const createPixPayment = async () => {
     try {
@@ -69,26 +77,38 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
     }
   };
 
+  const checkPaymentStatus = async (paymentId: string) => {
+    try {
+      setChecking(true);
+      const { data, error } = await supabase.functions.invoke('check-pix-status', {
+        body: { paymentId }
+      });
+
+      if (error) throw error;
+
+      if (data.success && data.status === 'paid') {
+        setStatus('paid');
+        toast({
+          title: "Pagamento confirmado!",
+          description: "Seu pedido foi confirmado com sucesso.",
+        });
+        setTimeout(onSuccess, 1000);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      return false;
+    } finally {
+      setChecking(false);
+    }
+  };
+
   const startStatusPolling = (paymentId: string) => {
     const interval = setInterval(async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('check-pix-status', {
-          body: { paymentId }
-        });
-
-        if (error) throw error;
-
-        if (data.success && data.status === 'paid') {
-          setStatus('paid');
-          clearInterval(interval);
-          toast({
-            title: "Pagamento confirmado!",
-            description: "Seu pedido foi confirmado com sucesso.",
-          });
-          setTimeout(onSuccess, 1000);
-        }
-      } catch (error) {
-        console.error('Error polling payment status:', error);
+      const isPaid = await checkPaymentStatus(paymentId);
+      if (isPaid) {
+        clearInterval(interval);
       }
     }, 5000); // Poll every 5 seconds
 
@@ -127,11 +147,8 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
         <XCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
         <h3 className="text-xl font-bold mb-2">PIX Expirado</h3>
         <p className="text-muted-foreground mb-4">
-          O código PIX expirou. Gere um novo código para continuar.
+          Redirecionando para o cardápio...
         </p>
-        <Button onClick={createPixPayment} className="btn-primary">
-          Gerar Novo PIX
-        </Button>
       </div>
     );
   }
@@ -193,9 +210,28 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
         )}
       </div>
 
-      <div className="text-center">
-        <p className="text-xs text-muted-foreground">
-          O pagamento será confirmado automaticamente após a aprovação
+      <div className="space-y-3">
+        <Button 
+          onClick={() => pixData?.id && checkPaymentStatus(pixData.id)}
+          disabled={checking}
+          className="w-full btn-primary"
+          size="lg"
+        >
+          {checking ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+              Verificando...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Verificar Pagamento
+            </>
+          )}
+        </Button>
+        
+        <p className="text-xs text-muted-foreground text-center">
+          O pagamento também será confirmado automaticamente
         </p>
       </div>
     </div>

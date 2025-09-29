@@ -20,7 +20,7 @@ interface PixPaymentProps {
 export default function PixPayment({ amount, customer, orderData, onSuccess, onError }: PixPaymentProps) {
   const [pixData, setPixData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [status, setStatus] = useState<'pending' | 'paid' | 'expired'>('pending');
   const { toast } = useToast();
 
@@ -54,7 +54,7 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
 
       if (data.success) {
         setPixData(data.payment);
-        setTimeLeft(300); // Reset timer
+        setTimeLeft(600); // Reset timer to 10 minutes
         
         // Start polling for payment status
         startStatusPolling(data.payment.id);
@@ -72,9 +72,13 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
   const startStatusPolling = (paymentId: string) => {
     const interval = setInterval(async () => {
       try {
-        // In a real app, you would check payment status via API
-        // For now, we'll simulate a successful payment after 10 seconds for testing
-        if (Math.random() > 0.9) { // 10% chance each poll
+        const { data, error } = await supabase.functions.invoke('check-pix-status', {
+          body: { paymentId }
+        });
+
+        if (error) throw error;
+
+        if (data.success && data.status === 'paid') {
           setStatus('paid');
           clearInterval(interval);
           toast({
@@ -86,10 +90,10 @@ export default function PixPayment({ amount, customer, orderData, onSuccess, onE
       } catch (error) {
         console.error('Error polling payment status:', error);
       }
-    }, 3000); // Poll every 3 seconds
+    }, 5000); // Poll every 5 seconds
 
-    // Clear interval after 5 minutes
-    setTimeout(() => clearInterval(interval), 300000);
+    // Clear interval after 10 minutes
+    setTimeout(() => clearInterval(interval), 600000);
   };
 
   const copyPixCode = () => {

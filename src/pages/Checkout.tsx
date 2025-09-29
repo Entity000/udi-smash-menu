@@ -14,7 +14,7 @@ interface CheckoutForm {
   document: string;
   address: string;
   complement: string;
-  paymentMethod: 'credit' | 'debit' | 'pix' | 'cash';
+  paymentMethod: 'pix';
 }
 
 export default function Checkout() {
@@ -28,7 +28,7 @@ export default function Checkout() {
     document: '',
     address: '',
     complement: '',
-    paymentMethod: 'credit'
+    paymentMethod: 'pix'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,24 +50,7 @@ export default function Checkout() {
       return;
     }
 
-    if (form.paymentMethod === 'pix') {
-      setShowPixPayment(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simular processamento para outros métodos
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Limpar carrinho e navegar para confirmação
-    clearCart();
-    navigate('/confirmacao', {
-      state: { 
-        orderData: { ...form, items, total },
-        orderId: Math.random().toString(36).substr(2, 9).toUpperCase()
-      }
-    });
+    setShowPixPayment(true);
   };
 
   const handlePixSuccess = () => {
@@ -210,35 +193,9 @@ export default function Checkout() {
                     Forma de Pagamento
                   </h3>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      { id: 'credit', label: 'Cartão de Crédito', icon: '💳' },
-                      { id: 'debit', label: 'Cartão de Débito', icon: '💳' },
-                      { id: 'pix', label: 'PIX', icon: '📱' },
-                      { id: 'cash', label: 'Dinheiro na Entrega', icon: '💵' }
-                    ].map((method) => (
-                      <label
-                        key={method.id}
-                        className={`cursor-pointer border-2 rounded-lg p-4 transition-all duration-300 hover:border-primary/50 ${
-                          form.paymentMethod === method.id 
-                            ? 'border-primary bg-primary/5' 
-                            : 'border-border'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="payment"
-                          value={method.id}
-                          checked={form.paymentMethod === method.id}
-                          onChange={(e) => handleInputChange('paymentMethod', e.target.value as any)}
-                          className="sr-only"
-                        />
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{method.icon}</span>
-                          <span className="font-medium">{method.label}</span>
-                        </div>
-                      </label>
-                    ))}
+                  <div className="flex items-center gap-3 p-4 border-2 border-primary bg-primary/5 rounded-lg">
+                    <span className="text-2xl">📱</span>
+                    <span className="font-medium">PIX</span>
                   </div>
                 </div>
               </form>
@@ -294,10 +251,8 @@ export default function Checkout() {
                             <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                             Processando...
                           </div>
-                        ) : form.paymentMethod === 'pix' ? (
-                          'Gerar PIX'
                         ) : (
-                          'Confirmar Pedido'
+                          'Gerar PIX'
                         )}
                       </Button>
                       
